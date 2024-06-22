@@ -1,4 +1,6 @@
-package net.kbd2.beantracer.util;
+package net.kbd2.beantracer.util.triplet;
+
+import net.kbd2.beantracer.util.Util;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -33,6 +35,12 @@ public class Vec3 {
     }
     public double z() {
         return this.z;
+    }
+
+    public double component(int n) {
+        if (n == 1) return y;
+        if (n == 2) return z;
+        return x;
     }
 
     public Vec3 add(Vec3 other) {
@@ -121,6 +129,10 @@ public class Vec3 {
         Vec3 outPerpendicular = add(normal.mul(cosTheta)).mul(refractiveIndexRatio);
         Vec3 outParallel = normal.mul(-Math.sqrt(Math.abs(1.0 - outPerpendicular.lengthSquared())));
         return outPerpendicular.add(outParallel);
+    }
+
+    public Vec3 lerp(Vec3 b, double t) {
+        return mul(1.0 - t).add(b.mul(t));
     }
 
     public static Vec3 random() {

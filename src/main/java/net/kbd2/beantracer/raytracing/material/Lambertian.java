@@ -2,8 +2,8 @@ package net.kbd2.beantracer.raytracing.material;
 
 import net.kbd2.beantracer.raytracing.Ray;
 import net.kbd2.beantracer.raytracing.shape.HitData;
-import net.kbd2.beantracer.util.Colour;
-import net.kbd2.beantracer.util.Vec3;
+import net.kbd2.beantracer.util.triplet.Colour;
+import net.kbd2.beantracer.util.triplet.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class Lambertian extends Material {
@@ -17,6 +17,6 @@ public class Lambertian extends Material {
     public @Nullable ScatterData scatter(Ray in, HitData hitData) {
         Vec3 scatterDirection = hitData.normal.add(Vec3.randomUnitVector());
         if (scatterDirection.nearZero()) scatterDirection = hitData.normal;
-        return new ScatterData(new Ray(hitData.point, scatterDirection), this.albedo);
+        return new ScatterData(new Ray(hitData.point, scatterDirection, in.time()), this.albedo);
     }
 }

@@ -2,8 +2,8 @@ package net.kbd2.beantracer.raytracing.material;
 
 import net.kbd2.beantracer.raytracing.Ray;
 import net.kbd2.beantracer.raytracing.shape.HitData;
-import net.kbd2.beantracer.util.Colour;
-import net.kbd2.beantracer.util.Vec3;
+import net.kbd2.beantracer.util.triplet.Colour;
+import net.kbd2.beantracer.util.triplet.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class Metal extends Material {
@@ -20,7 +20,7 @@ public class Metal extends Material {
         Vec3 reflected = in.dir().reflect(hitData.normal);
         reflected = reflected.unit().add(Vec3.randomUnitVector().mul(fuzz));
         if (reflected.dot(hitData.normal) > 0) {
-            Ray scattered = new Ray(hitData.point, reflected);
+            Ray scattered = new Ray(hitData.point, reflected, in.time());
             return new ScatterData(scattered, this.albedo);
         }
         else return null;

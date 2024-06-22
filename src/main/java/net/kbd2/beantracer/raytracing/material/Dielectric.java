@@ -2,8 +2,8 @@ package net.kbd2.beantracer.raytracing.material;
 
 import net.kbd2.beantracer.raytracing.Ray;
 import net.kbd2.beantracer.raytracing.shape.HitData;
-import net.kbd2.beantracer.util.Colour;
-import net.kbd2.beantracer.util.Vec3;
+import net.kbd2.beantracer.util.triplet.Colour;
+import net.kbd2.beantracer.util.triplet.Vec3;
 import org.jetbrains.annotations.Nullable;
 
 public class Dielectric extends Material {
@@ -30,7 +30,7 @@ public class Dielectric extends Material {
             direction = unitDirection.refract(hitData.normal, ri);
         }
 
-        return new ScatterData(new Ray(hitData.point, direction), new Colour(1.0, 1.0, 1.0));
+        return new ScatterData(new Ray(hitData.point, direction, in.time()), new Colour(1.0, 1.0, 1.0));
     }
 
     private static double reflectance(double cosine, double refractionIndex) {
