@@ -5,14 +5,15 @@
     },
     "rendering": {
         "threads": 10,
-        "samples-per-pixel": 500,
-        "max-bounces": 50
+        "samples-per-pixel": 5000,
+        "max-bounces": 50,
+        "background": [0, 0, 0]
     },
     "camera": {
-        "fov": 50,
-        "dof-angle": 0.6,
+        "fov": 30,
+        "dof-angle": 0,
         "focus-dist": 10,
-        "pos": [13, 2, 3],
-        "target": [0, 0, 0]
+        "pos": [26, 3, 6],
+        "target": [0, 2, 0]
     }
 }

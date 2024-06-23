@@ -2,6 +2,7 @@ package net.kbd2.beantracer.raytracing.shape;
 
 import net.kbd2.beantracer.raytracing.Ray;
 import net.kbd2.beantracer.raytracing.material.Material;
+import net.kbd2.beantracer.raytracing.texture.TextureCoord;
 import net.kbd2.beantracer.util.AABB;
 import net.kbd2.beantracer.util.Interval;
 import net.kbd2.beantracer.util.triplet.Point3;
@@ -58,9 +59,10 @@ public class Sphere extends Hittable {
 
         hitData.t = root;
         hitData.point = ray.at(root);
-        Vec3 outwardNormal = hitData.point.sub(currentCentre).div(this.radius);
+        Vec3 outwardNormal = hitData.point.sub(currentCentre).unit();
         hitData.setFaceNormal(ray, outwardNormal);
         hitData.mat = this.mat;
+        hitData.texCoord = getSphereUV(new Point3(outwardNormal));
 
         return hitData;
     }
@@ -72,5 +74,14 @@ public class Sphere extends Hittable {
 
     private Point3 sphereCentre(double time) {
         return this.centre.add(this.velocity.mul(time));
+    }
+
+    private static TextureCoord getSphereUV(Point3 point) {
+        double theta = Math.acos(-point.y);
+        double phi = Math.atan2(-point.z, point.x) + Math.PI;
+
+        double u = phi / (2.0 * Math.PI);
+        double v = theta / Math.PI;
+        return new TextureCoord(u, v);
     }
 }

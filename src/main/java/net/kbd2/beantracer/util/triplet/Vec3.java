@@ -5,9 +5,9 @@ import net.kbd2.beantracer.util.Util;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Vec3 {
-    protected final double x;
-    protected final double y;
-    protected final double z;
+    public final double x;
+    public final double y;
+    public final double z;
 
     public Vec3() {
         this.x = 0;
@@ -25,16 +25,6 @@ public class Vec3 {
         this.x = other.x;
         this.y = other.y;
         this.z = other.z;
-    }
-
-    public double x() {
-        return this.x;
-    }
-    public double y() {
-        return this.y;
-    }
-    public double z() {
-        return this.z;
     }
 
     public double component(int n) {
@@ -166,5 +156,9 @@ public class Vec3 {
             Vec3 p = new Vec3(Util.rand(-1, 1), Util.rand(-1, 1), 0);
             if (p.lengthSquared() < 1) return p;
         }
+    }
+
+    public String toString() {
+        return "{" + String.format("%.2f", this.x) + ", " + String.format("%.2f", this.y) + ", " + String.format("%.2f", this.z) + "}";
     }
 }

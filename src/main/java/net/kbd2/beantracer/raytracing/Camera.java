@@ -39,6 +39,8 @@ public class Camera {
     public double dofAngle = 10;
     public double focusDist = 3.4;
 
+    public Colour background = new Colour(0, 0, 0);
+
     private double pixelSamplesScale;
 
     private Point3 cameraPos;
@@ -152,22 +154,22 @@ public class Camera {
 
         HitData hitData = scene.hit(ray, new Interval(0.001, Double.POSITIVE_INFINITY));
         if (hitData != null) {
+            Colour emitted = hitData.mat.emitted(hitData.texCoord, hitData.point);
             Material.ScatterData scatterData = hitData.mat.scatter(ray, hitData);
             if (scatterData != null) {
-                return rayColour(scene, scatterData.ray(), depth - 1).mul(scatterData.attenuation());
-            } else return new Colour(0, 0, 0);
+                Colour scattered = rayColour(scene, scatterData.ray(), depth - 1).mul(scatterData.attenuation());
+                return emitted.add(scattered);
+            } else return emitted;
+        } else {
+            return this.background;
         }
-
-        Vec3 unitDir = ray.dir().unit();
-        double a = 0.5 * (unitDir.y() + 1);
-        return new Colour(1.0, 1.0, 1.0).lerp(new Colour(0.5, 0.7, 1.0), a);
     }
 
     private Ray getRay(int x, int y) {
         Vec3 offset = sampleSquare();
         Point3 pixelSample = upperLeftPixel
-                .add(pixelDeltaU.mul(x + offset.x()))
-                .add(pixelDeltaV.mul(y + offset.y()));
+                .add(pixelDeltaU.mul(x + offset.x))
+                .add(pixelDeltaV.mul(y + offset.y));
         Point3 rayOrigin = (this.dofAngle <= 0) ? cameraPos : dofDiskSample();
         Vec3 rayDirection = pixelSample.sub(rayOrigin);
         return new Ray(rayOrigin, rayDirection, ThreadLocalRandom.current().nextDouble());
@@ -180,7 +182,7 @@ public class Camera {
 
     private Point3 dofDiskSample() {
         Vec3 p = Vec3.randomInUnitDisk();
-        return cameraPos.add(dofDiskU.mul(p.x()).add(dofDiskV.mul(p.y())));
+        return cameraPos.add(dofDiskU.mul(p.x).add(dofDiskV.mul(p.y)));
     }
 
     private double linearToGamma(double linearComponent) {

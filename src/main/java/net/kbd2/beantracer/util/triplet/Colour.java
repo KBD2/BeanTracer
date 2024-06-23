@@ -35,6 +35,10 @@ public class Colour extends Vec3 {
         return new Colour(super.mul(other));
     }
 
+    public Colour mul(double n) {
+        return new Colour(super.mul(n));
+    }
+
     public Colour div(Colour other) {
         return new Colour(super.div(other));
     }

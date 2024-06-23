@@ -17,9 +17,9 @@ public class AABB {
     }
 
     public AABB(Point3 a, Point3 b) {
-        this.x = (a.x() <= b.x()) ? new Interval(a.x(), b.x()) : new Interval(b.x(), a.x());
-        this.y = (a.y() <= b.y()) ? new Interval(a.y(), b.y()) : new Interval(b.y(), a.y());
-        this.z = (a.z() <= b.z()) ? new Interval(a.z(), b.z()) : new Interval(b.z(), a.z());
+        this.x = (a.x <= b.x) ? new Interval(a.x, b.x) : new Interval(b.x, a.x);
+        this.y = (a.y <= b.y) ? new Interval(a.y, b.y) : new Interval(b.y, a.y);
+        this.z = (a.z <= b.z) ? new Interval(a.z, b.z) : new Interval(b.z, a.z);
 
         padToMinimums();
     }
