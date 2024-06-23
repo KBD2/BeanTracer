@@ -13,6 +13,10 @@ public class Colour extends Vec3 {
         super(r, g, b);
     }
 
+    public Colour(double v) {
+        super(v, v, v);
+    }
+
     public double r() {
         return this.x;
     }

@@ -1,7 +1,7 @@
 package net.kbd2.beantracer.util;
 
 import net.kbd2.beantracer.raytracing.Ray;
-import net.kbd2.beantracer.raytracing.Scene;
+import net.kbd2.beantracer.raytracing.shape.HittableList;
 import net.kbd2.beantracer.raytracing.shape.HitData;
 import net.kbd2.beantracer.raytracing.shape.Hittable;
 
@@ -13,7 +13,7 @@ public class BVHNode extends Hittable {
     private final Hittable left;
     private final Hittable right;
 
-    public BVHNode(Scene scene) {
+    public BVHNode(HittableList scene) {
         this(scene.getObjects());
     }
 

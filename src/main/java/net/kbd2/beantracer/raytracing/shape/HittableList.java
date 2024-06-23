@@ -1,7 +1,6 @@
-package net.kbd2.beantracer.raytracing;
+package net.kbd2.beantracer.raytracing.shape;
 
-import net.kbd2.beantracer.raytracing.shape.HitData;
-import net.kbd2.beantracer.raytracing.shape.Hittable;
+import net.kbd2.beantracer.raytracing.Ray;
 import net.kbd2.beantracer.util.AABB;
 import net.kbd2.beantracer.util.Interval;
 import org.jetbrains.annotations.Nullable;
@@ -9,15 +8,15 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Scene {
+public class HittableList extends Hittable {
     private final List<Hittable> objects = new ArrayList<>();
     private AABB boundingBox;
 
-    public Scene() {
+    public HittableList() {
         this.boundingBox = new AABB();
     }
 
-    public Scene(Hittable object) {
+    public HittableList(Hittable object) {
         this();
         add(object);
     }
@@ -44,5 +43,10 @@ public class Scene {
         }
 
         return tempData;
+    }
+
+    @Override
+    public AABB boundingBox() {
+        return this.boundingBox;
     }
 }

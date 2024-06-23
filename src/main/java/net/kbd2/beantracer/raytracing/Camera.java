@@ -6,6 +6,7 @@ import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngWriter;
 import net.kbd2.beantracer.raytracing.material.Material;
 import net.kbd2.beantracer.raytracing.shape.HitData;
+import net.kbd2.beantracer.raytracing.shape.HittableList;
 import net.kbd2.beantracer.util.*;
 import net.kbd2.beantracer.util.triplet.Colour;
 import net.kbd2.beantracer.util.triplet.Point3;
@@ -85,7 +86,7 @@ public class Camera {
         pixelSamplesScale = 1.0 / samplesPerPixel;
     }
 
-    public void render(Scene scene) throws IOException {
+    public void render(HittableList scene) throws IOException {
         Map<Integer, ImageLineInt> lines = new ConcurrentSkipListMap<>();
         Queue<Integer> availableRows = new ConcurrentLinkedQueue<>();
         for (int i = 0; i < imageHeight; i++) availableRows.add(i);
@@ -100,6 +101,7 @@ public class Camera {
                 Integer y;
                 while((y = availableRows.poll()) != null) {
                     System.out.println("Remaining rows: " + availableRows.size());
+                    System.out.flush();
                     ImageLineInt imgLine = new ImageLineInt(imgInfo);
                     for (int x = 0; x < imgInfo.cols; x++) {
                         Colour computed = new Colour();
@@ -149,7 +151,7 @@ public class Camera {
         png.end();
     }
 
-    private Colour rayColour(Scene scene, Ray ray, int depth) {
+    private Colour rayColour(HittableList scene, Ray ray, int depth) {
         if (depth <= 0) return new Colour(0, 0, 0);
 
         HitData hitData = scene.hit(ray, new Interval(0.001, Double.POSITIVE_INFINITY));

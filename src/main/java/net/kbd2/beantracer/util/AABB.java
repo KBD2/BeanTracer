@@ -50,6 +50,10 @@ public class AABB {
         return this.z;
     }
 
+    public AABB add(Vec3 offset) {
+        return new AABB(this.x.add(offset.x), this.y.add(offset.y), this.z.add(offset.z));
+    }
+
     public Interval axisInterval(int n) {
         if (n == 1) return y;
         if (n == 2) return z;

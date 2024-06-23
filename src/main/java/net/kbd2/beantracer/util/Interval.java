@@ -38,6 +38,10 @@ public class Interval {
         return new Interval(this.min, max);
     }
 
+    public Interval add(double displacement) {
+        return new Interval(this.min + displacement, this.max + displacement);
+    }
+
     public boolean contains(double x) {
         return this.min <= x && x <= this.max;
     }

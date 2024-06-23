@@ -15,7 +15,7 @@ public class Quad extends Hittable {
     private final Vec3 w;
     private final Material mat;
     private AABB boundingBox;
-    private final Vec3 normal;
+    private Vec3 normal;
     private final double d;
 
     public Quad(Point3 q, Vec3 u, Vec3 v, Material mat) {
@@ -74,5 +74,25 @@ public class Quad extends Hittable {
     @Override
     public AABB boundingBox() {
         return this.boundingBox;
+    }
+
+    public static HittableList box(Point3 a, Point3 b, Material mat) {
+        HittableList sides = new HittableList();
+
+        Point3 min = new Point3(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z));
+        Point3 max = new Point3(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z));
+
+        Vec3 dX = new Vec3(max.x - min.x, 0, 0);
+        Vec3 dY = new Vec3(0, max.y - min.y, 0);
+        Vec3 dZ = new Vec3(0, 0, max.z - min.z);
+
+        sides.add(new Quad(new Point3(min.x, min.y, max.z),  dX,  dY, mat)); // front
+        sides.add(new Quad(new Point3(max.x, min.y, max.z), dZ.mul(-1),  dY, mat)); // right
+        sides.add(new Quad(new Point3(max.x, min.y, min.z), dX.mul(-1),  dY, mat)); // back
+        sides.add(new Quad(new Point3(min.x, min.y, min.z),  dZ,  dY, mat)); // left
+        sides.add(new Quad(new Point3(min.x, max.y, max.z),  dX, dZ.mul(-1), mat)); // top
+        sides.add(new Quad(new Point3(min.x, min.y, min.z),  dX,  dZ, mat)); // bottom
+
+        return sides;
     }
 }

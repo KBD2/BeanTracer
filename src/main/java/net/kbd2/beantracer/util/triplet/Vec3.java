@@ -33,6 +33,12 @@ public class Vec3 {
         return x;
     }
 
+    public Vec3 component(int n, double val) {
+        if (n == 1) return new Vec3(this.x, val, this.z);
+        if (n == 2) return new Vec3(this.x, this.y, val);
+        return new Vec3(val, this.y, this.z);
+    }
+
     public Vec3 add(Vec3 other) {
         return new Vec3(
             this.x + other.x,

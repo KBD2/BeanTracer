@@ -1,29 +1,26 @@
 package net.kbd2.beantracer;
 
 import net.kbd2.beantracer.raytracing.Camera;
-import net.kbd2.beantracer.raytracing.Scene;
+import net.kbd2.beantracer.raytracing.shape.*;
 import net.kbd2.beantracer.raytracing.material.*;
-import net.kbd2.beantracer.raytracing.shape.Quad;
-import net.kbd2.beantracer.raytracing.shape.Sphere;
 import net.kbd2.beantracer.raytracing.texture.Checkered;
 import net.kbd2.beantracer.raytracing.texture.Image;
 import net.kbd2.beantracer.raytracing.texture.Noise;
 import net.kbd2.beantracer.raytracing.texture.Texture;
 import net.kbd2.beantracer.util.BVHNode;
+import net.kbd2.beantracer.util.Util;
 import net.kbd2.beantracer.util.triplet.Colour;
 import net.kbd2.beantracer.util.triplet.Point3;
-import net.kbd2.beantracer.util.Util;
 import net.kbd2.beantracer.util.triplet.Vec3;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class BeanTracer {
-    private static Scene scene = new Scene();
+    private static HittableList scene = new HittableList();
     private static final Camera camera = new Camera();
 
     public static void main(String[] args) throws IOException {
@@ -64,9 +61,9 @@ public class BeanTracer {
     }
 
     private static void bouncingSpheres() {
-        Scene world = new Scene();
+        HittableList world = new HittableList();
 
-        Texture checkered = new Checkered(0.32, new Colour(0.2, 0.3, 0.1), new Colour(0.9, 0.9, 0.9));
+        Texture checkered = new Checkered(0.32, new Colour(0.2, 0.3, 0.1), new Colour(0.9));
         Material groundMaterial = new Lambertian(checkered);
         world.add(new Sphere(new Point3(0, -1000, 0), 1000, groundMaterial));
 
@@ -108,11 +105,11 @@ public class BeanTracer {
         Material material1 = new Dielectric(1.5);
         world.add(new Sphere(new Point3(5, 1, 4), 1, material1));
 
-        scene = new Scene(new BVHNode(world));
+        scene = new HittableList(new BVHNode(world));
     }
 
     private static void checkeredSpheres() {
-        Texture checkered = new Checkered(0.32, new Colour(0.2, 0.3, 0.1), new Colour(0.9, 0.9, 0.9));
+        Texture checkered = new Checkered(0.32, new Colour(0.2, 0.3, 0.1), new Colour(0.9));
         scene.add(new Sphere(new Point3(0, -10, 0), 10, new Lambertian(checkered)));
         scene.add(new Sphere(new Point3(0, 10, 0), 10, new Lambertian(checkered)));
     }
@@ -146,13 +143,42 @@ public class BeanTracer {
 
     private static void simpleLight() {
         Texture perlinTexture = new Noise(Noise.NoiseType.MARBLED, 4);
-        Texture checkered = new Checkered(4, new Colour(0.2, 0.2, 0.2), new Colour(0.9, 0.9, 0.9));
+        Texture checkered = new Checkered(4, new Colour(0.2), new Colour(0.9));
         scene.add(new Sphere(new Point3(0, -1000, 0), 1000, new Lambertian(checkered)));
-        scene.add(new Sphere(new Point3(0, 2, 0), 2, new Lambertian(perlinTexture)));
+        scene.add(new Sphere(new Point3(0, 2, 0), 1, new Dielectric(1.33)));
+        scene.add(new Sphere(new Point3(0, 2, 0), 0.8, new Lambertian(new Image("./images/earthmap.png"))));
 
-        DiffuseLight light = new DiffuseLight(new Colour(1, 1, 10));
+        DiffuseLight light = new DiffuseLight(new Colour(3.6, 3.1, 6));
         scene.add(new Quad(new Point3(3, 1, -2), new Vec3(2, 0, 0), new Vec3(0, 2, 0), light));
-        DiffuseLight sphereLight = new DiffuseLight(new Colour(4, 4, 4));
+        DiffuseLight sphereLight = new DiffuseLight(new Colour(10));
         scene.add(new Sphere(new Point3(0, 7, 0), 2, sphereLight));
+
+        Hittable box = Quad.box(new Point3(0, 0, 4), new Point3(1, 2, 5), new Lambertian(perlinTexture));
+        box = new RotateY(box, 15);
+        scene.add(box);
+    }
+
+    private static void cornellBox() {
+        Material red = new Lambertian(new Colour(0.65, 0.05, 0.05));
+        Material white = new Lambertian(new Colour(0.73));
+        Material green = new Lambertian(new Colour(0.12, 0.45, 0.15));
+        Material light = new DiffuseLight(new Colour(15));
+
+        scene.add(new Quad(new Point3(555, 0, 0), new Vec3(0, 555, 0), new Vec3(0, 0, 555), green));
+        scene.add(new Quad(new Point3(0, 0, 0), new Vec3(0, 555, 0), new Vec3(0, 0, 555), red));
+        scene.add(new Quad(new Point3(343, 554, 332), new Vec3(-130, 0, 0), new Vec3(0, 0, -105), light));
+        scene.add(new Quad(new Point3(0, 0, 0), new Vec3(555, 0, 0), new Vec3(0, 0, 555), white));
+        scene.add(new Quad(new Point3(555, 555, 555), new Vec3(-555, 0, 0), new Vec3(0, 0, -555), white));
+        scene.add(new Quad(new Point3(0, 0, 555), new Vec3(555, 0, 0), new Vec3(0, 555, 0), white));
+
+        Hittable box1 = Quad.box(new Point3(0, 0, 0), new Point3(165, 330, 165), white);
+        box1 = new RotateY(box1, 15);
+        box1 = new Translate(box1, new Vec3(265, 0, 295));
+        scene.add(box1);
+
+        Hittable box2 = Quad.box(new Point3(0, 0, 0), new Point3(165, 165, 165), white);
+        box2 = new RotateY(box2, -18);
+        box2 = new Translate(box2, new Vec3(130, 0, 65));
+        scene.add(box2);
     }
 }
