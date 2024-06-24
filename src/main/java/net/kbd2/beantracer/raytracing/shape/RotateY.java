@@ -62,13 +62,14 @@ public class RotateY extends Hittable {
         if (hitData == null) return null;
 
         Point3 point = hitData.point;
-
-        point = new Point3(point.component(0, cosTheta * point.component(0) + sinTheta * point.component(2)));
-        point = new Point3(point.component(2, -sinTheta * point.component(0) + cosTheta * point.component(2)));
+        double newPointX = cosTheta * point.component(0) + sinTheta * point.component(2);
+        double newPointZ = -sinTheta * point.component(0) + cosTheta * point.component(2);
+        point = new Point3(newPointX, point.y, newPointZ);
 
         Vec3 normal = hitData.normal;
-        normal = normal.component(0, cosTheta * normal.component(0) + sinTheta * normal.component(2));
-        normal = normal.component(2, -sinTheta * normal.component(0) + cosTheta * normal.component(2));
+        double newNormalX = cosTheta * normal.component(0) + sinTheta * normal.component(2);
+        double newNormalZ = -sinTheta * normal.component(0) + cosTheta * normal.component(2);
+        normal = new Vec3(newNormalX, normal.y, newNormalZ);
 
         hitData.point = point;
         hitData.normal = normal;
@@ -80,11 +81,13 @@ public class RotateY extends Hittable {
         Point3 origin = ray.orig();
         Vec3 direction = ray.dir();
 
-        origin = new Point3(origin.component(0, cosTheta * origin.component(0) - sinTheta * origin.component(2)));
-        origin = new Point3(origin.component(2, sinTheta * origin.component(0) + cosTheta * origin.component(2)));
+        double newOriginX = cosTheta * origin.component(0) - sinTheta * origin.component(2);
+        double newOriginZ = sinTheta * origin.component(0) + cosTheta * origin.component(2);
+        origin = new Point3(newOriginX, origin.y, newOriginZ);
 
-        direction = direction.component(0, cosTheta * direction.component(0) - sinTheta * direction.component(2));
-        direction = direction.component(2, sinTheta * direction.component(0) + cosTheta * direction.component(2));
+        double newDirectionX = cosTheta * direction.component(0) - sinTheta * direction.component(2);
+        double newDirectionZ = sinTheta * direction.component(0) + cosTheta * direction.component(2);
+        direction = new Vec3(newDirectionX, direction.y, newDirectionZ);
 
         return new Ray(origin, direction, ray.time());
     }

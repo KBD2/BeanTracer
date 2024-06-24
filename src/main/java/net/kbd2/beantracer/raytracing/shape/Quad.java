@@ -15,7 +15,7 @@ public class Quad extends Hittable {
     private final Vec3 w;
     private final Material mat;
     private AABB boundingBox;
-    private Vec3 normal;
+    private final Vec3 normal;
     private final double d;
 
     public Quad(Point3 q, Vec3 u, Vec3 v, Material mat) {

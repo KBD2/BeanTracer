@@ -24,7 +24,7 @@ public class BeanTracer {
     private static final Camera camera = new Camera();
 
     public static void main(String[] args) throws IOException {
-        simpleLight();
+        cornellBox();
 
         JSONObject config = new JSONObject(Files.readString(Paths.get("./config.json")));
 
