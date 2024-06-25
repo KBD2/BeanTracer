@@ -1,11 +1,11 @@
 {
     "image": {
-        "width": 600,
-        "height": 600
+        "width": 800,
+        "height": 800
     },
     "rendering": {
         "threads": 10,
-        "samples-per-pixel": 5000,
+        "samples-per-pixel": 10000,
         "max-bounces": 50,
         "background": [0, 0, 0]
     },
@@ -13,7 +13,7 @@
         "fov": 40,
         "dof-angle": 0,
         "focus-dist": 10,
-        "pos": [278, 278, -800],
+        "pos": [478, 278, -600],
         "target": [278, 278, 0]
     }
 }

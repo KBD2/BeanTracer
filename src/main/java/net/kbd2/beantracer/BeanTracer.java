@@ -1,8 +1,8 @@
 package net.kbd2.beantracer;
 
 import net.kbd2.beantracer.raytracing.Camera;
-import net.kbd2.beantracer.raytracing.shape.*;
 import net.kbd2.beantracer.raytracing.material.*;
+import net.kbd2.beantracer.raytracing.shape.*;
 import net.kbd2.beantracer.raytracing.texture.Checkered;
 import net.kbd2.beantracer.raytracing.texture.Image;
 import net.kbd2.beantracer.raytracing.texture.Noise;
@@ -24,7 +24,7 @@ public class BeanTracer {
     private static final Camera camera = new Camera();
 
     public static void main(String[] args) throws IOException {
-        cornellBox();
+        finalScene();
 
         JSONObject config = new JSONObject(Files.readString(Paths.get("./config.json")));
 
@@ -176,9 +176,91 @@ public class BeanTracer {
         box1 = new Translate(box1, new Vec3(265, 0, 295));
         scene.add(box1);
 
+        /*Hittable box2 = Quad.box(new Point3(0, 0, 0), new Point3(165, 165, 165), white);
+        box2 = new RotateY(box2, -18);
+        box2 = new Translate(box2, new Vec3(130, 0, 65));
+        scene.add(box2);*/
+
+        scene.add(new Sphere(new Point3(215, 150, 140), 80, new Dielectric(1.33)));
+    }
+
+    private static void cornellSmoke() {
+        Material red = new Lambertian(new Colour(0.65, 0.05, 0.05));
+        Material white = new Lambertian(new Colour(0.73));
+        Material green = new Lambertian(new Colour(0.12, 0.45, 0.15));
+        Material light = new DiffuseLight(new Colour(7));
+
+        scene.add(new Quad(new Point3(555, 0, 0), new Vec3(0, 555, 0), new Vec3(0, 0, 555), green));
+        scene.add(new Quad(new Point3(0, 0, 0), new Vec3(0, 555, 0), new Vec3(0, 0, 555), red));
+        scene.add(new Quad(new Point3(343, 554, 332), new Vec3(-130, 0, 0), new Vec3(0, 0, -105), light));
+        scene.add(new Quad(new Point3(0, 0, 0), new Vec3(555, 0, 0), new Vec3(0, 0, 555), white));
+        scene.add(new Quad(new Point3(555, 555, 555), new Vec3(-555, 0, 0), new Vec3(0, 0, -555), white));
+        scene.add(new Quad(new Point3(0, 0, 555), new Vec3(555, 0, 0), new Vec3(0, 555, 0), white));
+
+        Hittable box1 = Quad.box(new Point3(0, 0, 0), new Point3(165, 330, 165), white);
+        box1 = new RotateY(box1, 15);
+        box1 = new Translate(box1, new Vec3(265, 0, 295));
+        scene.add(new ConstantMedium(box1, 0.01, new Colour(0)));
+
         Hittable box2 = Quad.box(new Point3(0, 0, 0), new Point3(165, 165, 165), white);
         box2 = new RotateY(box2, -18);
         box2 = new Translate(box2, new Vec3(130, 0, 65));
-        scene.add(box2);
+        scene.add(new ConstantMedium(box2, 0.01, (new Noise(Noise.NoiseType.MARBLED, 4))));
+    }
+
+    private static void finalScene() {
+        HittableList groundBoxes =  new HittableList();
+        Lambertian ground = new Lambertian(new Colour(0.48, 0.83, 0.53));
+        for (int i = 0; i < 20; i++) {
+            for (int j = 0; j < 20; j++) {
+                double w = 100;
+                double x0 = -1000 + i * w;
+                double z0 = -1000 + j * w;
+                double y0 = 0;
+                double x1 = x0 + w;
+                double y1 = Util.rand(1, 101);
+                double z1 = z0 + w;
+                groundBoxes.add(Quad.box(new Point3(x0, y0, z0), new Point3(x1, y1, z1), ground));
+            }
+        }
+
+        scene.add(new BVHNode(groundBoxes));
+
+        Material light = new DiffuseLight(new Colour(7));
+        scene.add(new Quad(new Point3(123, 554, 147), new Vec3(300, 0, 0), new Vec3(0, 0, 265), light));
+
+        Point3 centre1 = new Point3(400, 400, 200);
+        Point3 centre2 = centre1.add(new Vec3(30, 0, 0));
+        Material sphereMaterial = new Lambertian(new Colour(0.7, 0.3, 0.1));
+        scene.add(new Sphere(centre1, centre2, 50, sphereMaterial));
+
+        scene.add(new Sphere(new Point3(260, 150, 45), 50, new Dielectric(1.5)));
+        scene.add(new Sphere(new Point3(0, 150, 145), 50, new Metal(new Colour(0.8, 0.8, 0.9), 1)));
+
+        Sphere boundary = new Sphere(new Point3(360, 150, 145), 70, new Dielectric(1.5));
+        scene.add(boundary);
+        scene.add(new ConstantMedium(boundary, 0.2, new Colour(0.2, 0.4, 0.9)));
+        boundary = new Sphere(new Point3(0, 0, 0), 5000, new Dielectric(1.5));
+        scene.add(new ConstantMedium(boundary, 0.0001, new Colour(1)));
+
+        Lambertian eMat = new Lambertian(new Image("./images/earthmap.png"));
+        scene.add(new Sphere(new Point3(400, 200, 400), 100, eMat));
+        Texture perlin = new Noise(Noise.NoiseType.MARBLED, 0.2);
+        scene.add(new Sphere(new Point3(220, 280, 300), 80, new Lambertian(perlin)));
+
+        HittableList ballsBox = new HittableList();
+        Material white = new Lambertian(new Colour(0.73));
+        for (int j = 0; j < 1000; j++) {
+            ballsBox.add(new Sphere(new Point3(Point3.random(0, 165)), 10, white));
+        }
+        scene.add(
+                new Translate(
+                        new RotateY(
+                                new BVHNode(ballsBox),
+                                15
+                        ),
+                        new Vec3(-100, 270, 395)
+                )
+        );
     }
 }
